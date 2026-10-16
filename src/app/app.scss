@@ -1,0 +1,39 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.app-layout {
+  height: 100%;
+}
+
+mat-sidenav {
+  width: 240px;
+  padding: 16px;
+  border-right: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 0;
+}
+
+.app-title {
+  margin: 8px 16px 24px;
+  font: var(--mat-sys-title-large);
+}
+
+main {
+  padding: 24px;
+}
+
+@media (max-width: 600px) {
+  mat-sidenav {
+    width: 160px;
+    padding: 8px;
+  }
+
+  .app-title {
+    margin: 8px 8px 16px;
+  }
+
+  main {
+    padding: 16px;
+  }
+}

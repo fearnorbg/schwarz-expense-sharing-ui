@@ -1,3 +1,34 @@
-<div>App</div>
-
-<router-outlet />
+<mat-sidenav-container class="app-layout">
+  <mat-sidenav mode="side" opened>
+    <h1 class="app-title">Expense Sharing</h1>
+    <nav aria-label="Main navigation">
+      <mat-nav-list>
+        <a
+          mat-list-item
+          routerLink="/expense-management"
+          routerLinkActive
+          #expensesLink="routerLinkActive"
+          [activated]="expensesLink.isActive"
+          ariaCurrentWhenActive="page"
+        >
+          Expenses
+        </a>
+        <a
+          mat-list-item
+          routerLink="/members-management"
+          routerLinkActive
+          #membersLink="routerLinkActive"
+          [activated]="membersLink.isActive"
+          ariaCurrentWhenActive="page"
+        >
+          Members
+        </a>
+      </mat-nav-list>
+    </nav>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <main>
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
