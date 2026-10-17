@@ -44,25 +44,6 @@ export class ExpenseService {
     return timer(addExpenseDelay).pipe(switchMap(() => resultSubject.asObservable()));
   }
 
-  removeExpense(expenseId: number): Observable<void> {
-    const expenseIndex = this.expenses().findIndex((expense) => expense.id === expenseId);
-    if (expenseIndex < 0) {
-      return timer(removeExpenseDelay).pipe(
-        map(() => {
-          throw new Error(`Unknown expense ID: ${expenseId}.`);
-        }),
-      );
-    }
-
-    this.expenses.update((expenses) => [...expenses].splice(expenseIndex, 1));
-
-    return timer(removeExpenseDelay).pipe(
-      map(() => {
-        return undefined;
-      }),
-    );
-  }
-
   private validateExpense(expense: Expense): Observable<void> {
     if (expense.title.trim() === '') {
       return throwError(() => new Error('Expense title cannot be empty.'));
@@ -72,8 +53,8 @@ export class ExpenseService {
       return throwError(() => new Error('Expense amount in cents must be an integer.'));
     }
 
-    if (expense.amountInCents < 0) {
-      return throwError(() => new Error('Expense amount must be positive.'));
+    if (expense.amountInCents <= 0) {
+      return throwError(() => new Error('Expense amount must be greater than zero.'));
     }
 
     if (expense.amountInCents > maxExpenseAmount * 100) {

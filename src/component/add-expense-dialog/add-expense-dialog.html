@@ -14,8 +14,10 @@
       <input matInput formControlName="amount" inputmode="decimal" />
       @if (form.controls.amount.hasError('max')) {
         <mat-error>Expense amount cannot exceed {{ maxExpenseAmount }}.</mat-error>
+      } @else if (form.controls.amount.hasError('min')) {
+        <mat-error>Expense amount must be greater than zero.</mat-error>
       } @else {
-        <mat-error>Enter a non-negative amount with up to two decimal places.</mat-error>
+        <mat-error>Enter an amount greater than zero with up to two decimal places.</mat-error>
       }
     </mat-form-field>
     <mat-form-field appearance="outline">

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { Member } from '../../model/member';
 import { ExpenseService } from '../../service/expense.service';
 import { maxExpenseAmount } from '../../model/expense';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-add-expense-dialog',
@@ -17,12 +18,17 @@ import { maxExpenseAmount } from '../../model/expense';
 })
 export class AddExpenseDialog {
   protected readonly maxExpenseAmount = maxExpenseAmount;
-  protected readonly members = [...inject<Member[]>(MAT_DIALOG_DATA)].sort((a, b) => a.name.localeCompare(b.name));
+  protected readonly members;
   protected readonly form = new FormGroup({
     title: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/\S/)] }),
     amount: new FormControl('', {
       nonNullable: true,
-      validators: [Validators.required, Validators.pattern(/^\d+(\.\d{1,2})?$/), Validators.max(maxExpenseAmount)],
+      validators: [
+        Validators.required,
+        Validators.pattern(/^\d+(\.\d{1,2})?$/),
+        Validators.min(0.01),
+        Validators.max(maxExpenseAmount),
+      ],
     }),
     payerId: new FormControl<number | null>(null, Validators.required),
     participantIds: new FormControl<number[]>([], { nonNullable: true, validators: [Validators.required] }),
@@ -31,6 +37,12 @@ export class AddExpenseDialog {
   protected readonly error = signal('');
   private readonly expenseService = inject(ExpenseService);
   private readonly dialogRef = inject(MatDialogRef<AddExpenseDialog>);
+  private readonly destroyRef = inject(DestroyRef);
+
+  constructor() {
+    this.members = [...inject<Member[]>(MAT_DIALOG_DATA)];
+    this.members.sort((a, b) => a.name.localeCompare(b.name));
+  }
 
   protected save(): void {
     if (this.saving()) {
@@ -57,14 +69,17 @@ export class AddExpenseDialog {
     this.error.set('');
     this.form.disable();
     this.dialogRef.disableClose = true;
-    this.expenseService.addExpense({ id: 0, title, amountInCents, payerId, participantIds }).subscribe({
-      next: (expense) => this.dialogRef.close(expense),
-      error: (error: unknown) => {
-        this.saving.set(false);
-        this.form.enable();
-        this.dialogRef.disableClose = false;
-        this.error.set(error instanceof Error ? error.message : String(error));
-      },
-    });
+    this.expenseService
+      .addExpense({ id: 0, title, amountInCents, payerId, participantIds })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (expense) => this.dialogRef.close(expense),
+        error: (error: unknown) => {
+          this.saving.set(false);
+          this.form.enable();
+          this.dialogRef.disableClose = false;
+          this.error.set(error instanceof Error ? error.message : String(error));
+        },
+      });
   }
 }
