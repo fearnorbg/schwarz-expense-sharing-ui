@@ -1,48 +1,33 @@
-import { Component, inject, OnInit, signal, OnDestroy, computed } from '@angular/core';
-import { DecimalPipe } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
-import { createViewModel, Expense, ExpenseViewModel } from '../../model/expense';
+import { Component, inject, OnInit, signal, OnDestroy, DestroyRef } from '@angular/core';
+import { Expense } from '../../model/expense';
+import { DebtSettlementTransaction } from '../../model/debt-settlement';
 import { MemberService } from '../../service/member.service';
 import { MatDialog } from '@angular/material/dialog';
 import { forkJoin, Subscription } from 'rxjs';
 import { ExpenseService } from '../../service/expense.service';
-import { getMembersById, Member } from '../../model/member';
-import { MatButton } from '@angular/material/button';
+import { Member } from '../../model/member';
 import { AddExpenseDialog } from '../../component/add-expense-dialog/add-expense-dialog';
+import { DebtSettlementService } from '../../service/debt-settlement.service';
+
+import { ExpenseList } from '../../component/expense-list/expense-list';
+import { DebtSettlementList } from '../../component/debt-settlement-list/debt-settlement-list';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  imports: [MatTableModule, MatButton, DecimalPipe],
+  imports: [ExpenseList, DebtSettlementList],
   selector: 'app-expense-management',
   styleUrl: './expense-management.scss',
   templateUrl: './expense-management.html',
 })
 export class ExpenseManagement implements OnInit, OnDestroy {
-  protected readonly displayedColumns = ['title', 'amount', 'payer', 'participants'];
-  protected readonly totalExpensesInCents = computed<number | undefined>(() => {
-    const expenses = this.expensesViewData();
-    if (!expenses) {
-      return undefined;
-    }
-
-    return expenses
-      .map((expense) => expense.amountInCents)
-      .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-  });
-  protected readonly expensesViewData = computed<ExpenseViewModel[] | undefined>(() => {
-    const expenses = this.expenses();
-    const members = this.members();
-    if (!expenses || !members) {
-      return undefined;
-    }
-
-    const membersById = getMembersById(members);
-    return expenses.map((expense) => createViewModel(expense, membersById));
-  });
-  private readonly expenses = signal<Expense[] | undefined>(undefined);
-  private readonly members = signal<Member[] | undefined>(undefined);
+  protected readonly expenses = signal<Expense[] | undefined>(undefined);
+  protected readonly settlements = signal<DebtSettlementTransaction[] | undefined>(undefined);
+  protected readonly members = signal<Member[] | undefined>(undefined);
   private readonly memberService = inject(MemberService);
   private readonly expenseService = inject(ExpenseService);
+  private readonly debtSettlementService = inject(DebtSettlementService);
   private readonly dialog = inject(MatDialog);
+  private readonly destroyRef = inject(DestroyRef);
   private loadExpensesDataSubscription: Subscription | null = null;
 
   ngOnInit() {
@@ -67,6 +52,7 @@ export class ExpenseManagement implements OnInit, OnDestroy {
         maxWidth: 'calc(100vw - 32px)',
       })
       .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((expense) => {
         if (expense) {
           this.loadData();
@@ -77,6 +63,7 @@ export class ExpenseManagement implements OnInit, OnDestroy {
   private loadData() {
     this.members.set(undefined);
     this.expenses.set(undefined);
+    this.settlements.set(undefined);
 
     if (this.loadExpensesDataSubscription) {
       this.loadExpensesDataSubscription.unsubscribe();
@@ -85,9 +72,11 @@ export class ExpenseManagement implements OnInit, OnDestroy {
     this.loadExpensesDataSubscription = forkJoin([
       this.expenseService.getExpenses(),
       this.memberService.getMembers(),
-    ]).subscribe(([expenses, members]) => {
+      this.debtSettlementService.calculateDebtSettlementTransactions(),
+    ]).subscribe(([expenses, members, settlements]) => {
       this.expenses.set(expenses);
       this.members.set(members);
+      this.settlements.set(settlements);
     });
   }
 }

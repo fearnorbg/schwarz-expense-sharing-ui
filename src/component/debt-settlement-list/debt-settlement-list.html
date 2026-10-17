@@ -1,0 +1,39 @@
+<div class="expenses-table-container">
+  <table mat-table [dataSource]="settlementsViewData() ?? []" aria-label="Settlements">
+    <ng-container matColumnDef="toolbar">
+      <th mat-header-cell *matHeaderCellDef [attr.colspan]="settlementColumns.length">
+        <div class="list-header">
+          <h2>Settlements</h2>
+        </div>
+      </th>
+    </ng-container>
+
+    <ng-container matColumnDef="sender">
+      <th mat-header-cell *matHeaderCellDef scope="col">From</th>
+      <td mat-cell *matCellDef="let settlement">{{ settlement.sender.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="recipient">
+      <th mat-header-cell *matHeaderCellDef scope="col">To</th>
+      <td mat-cell *matCellDef="let settlement">{{ settlement.recipient.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="amount">
+      <th mat-header-cell *matHeaderCellDef scope="col">Amount</th>
+      <td mat-cell *matCellDef="let settlement">€{{ settlement.amountInCents / 100 | number: '1.2-2' }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="['toolbar']"></tr>
+    <tr mat-header-row *matHeaderRowDef="settlementColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: settlementColumns"></tr>
+    <tr *matNoDataRow>
+      <td class="table-status" [attr.colspan]="settlementColumns.length">
+        @if (settlementsViewData()) {
+          No settlements needed.
+        } @else {
+          <span role="status">Calculating settlements...</span>
+        }
+      </td>
+    </tr>
+  </table>
+</div>

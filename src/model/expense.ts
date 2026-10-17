@@ -18,12 +18,6 @@ export interface ExpenseViewModel {
   participants: Member[];
 }
 
-export interface DebtSettlementTransaction {
-  senderId: number;
-  recipientId: number;
-  amountInCents: number;
-}
-
 export function createViewModel(expense: Expense, membersById: Map<number, Member>): ExpenseViewModel {
   if (!membersById.has(expense.payerId)) {
     throw new Error(`Expense payer with ID: ${expense.payerId} not found.`);

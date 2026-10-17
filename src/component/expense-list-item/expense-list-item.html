@@ -1,8 +1,0 @@
-<mat-list-item>
-  <div class="expense-details">
-    <p><strong>Title:</strong> {{ expense().title }}</p>
-    <p><strong>Amount:</strong> €{{ expense().amountInCents / 100 | number: '1.2-2' }}</p>
-    <p><strong>Paid by:</strong> {{ expense().payer.name }}</p>
-    <p><strong>Split by:</strong> {{ participantNames() }}</p>
-  </div>
-</mat-list-item>

@@ -1,32 +1,23 @@
-import { Component, inject, OnInit, signal, OnDestroy, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, OnDestroy, DestroyRef } from '@angular/core';
 import { Member } from '../../model/member';
 import { MemberService } from '../../service/member.service';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
+import { MemberList } from '../../component/member-list/member-list';
 import { MatDialog } from '@angular/material/dialog';
 import { AddMemberDialog } from '../../component/add-member-dialog/add-member-dialog';
 import { Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  imports: [MatTableModule, MatButtonModule],
+  imports: [MemberList],
   selector: 'app-members-management',
   styleUrl: './members-management.scss',
   templateUrl: './members-management.html',
 })
 export class MembersManagement implements OnInit, OnDestroy {
-  protected readonly displayedColumns = ['name'];
-  protected readonly sortedMembers = computed(() => {
-    const members = this.members();
-    if (!members) {
-      return undefined;
-    }
-
-    return [...members].sort((a, b) => a.name.localeCompare(b.name));
-  });
-
-  private readonly members = signal<Member[] | undefined>(undefined);
+  protected readonly members = signal<Member[] | undefined>(undefined);
   private readonly memberService = inject(MemberService);
   private readonly dialog = inject(MatDialog);
+  private readonly destroyRef = inject(DestroyRef);
   private loadMembersSubscription: Subscription | null = null;
 
   ngOnInit() {
@@ -44,11 +35,14 @@ export class MembersManagement implements OnInit, OnDestroy {
       width: '400px',
       maxWidth: 'calc(100vw - 32px)',
     });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.loadMembers();
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result) => {
+        if (result) {
+          this.loadMembers();
+        }
+      });
   }
 
   private loadMembers(): void {
