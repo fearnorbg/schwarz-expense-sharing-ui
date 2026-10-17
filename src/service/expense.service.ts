@@ -6,7 +6,6 @@ import { MemberService } from './member.service';
 
 const getExpensesDelay = 1000;
 const addExpenseDelay = 1500;
-const removeExpenseDelay = 1500;
 const defaultExpenses: Expense[] = [];
 const defaultLastExpenseId = Math.max(0, ...defaultExpenses.map((expense) => expense.id));
 

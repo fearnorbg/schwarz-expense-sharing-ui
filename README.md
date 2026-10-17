@@ -6,12 +6,16 @@
 2. Perform `npm install` inside the project root folder.
 3. Follow the steps below to build or run the project.
 
+## StackBlitz
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/fearnorbg/schwarz-expense-sharing-ui)
+
 ## Development server
 
 To start a local development server, run:
 
 ```bash
-ng serve
+npm run start
 ```
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
@@ -21,7 +25,7 @@ Once the server is running, open your browser and navigate to `http://localhost:
 To build the project run:
 
 ```bash
-ng build
+npm run build
 ```
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
@@ -31,5 +35,5 @@ This will compile your project and store the build artifacts in the `dist/` dire
 To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
 
 ```bash
-ng test
+npm run test
 ```
