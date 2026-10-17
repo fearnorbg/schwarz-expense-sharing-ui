@@ -1,1 +1,12 @@
-<p>members-management works!</p>
+<button mat-flat-button type="button" (click)="addMember()" [disabled]="!sortedMembers()">Add member +</button>
+@if (sortedMembers(); as loadedMembers) {
+  <mat-list aria-label="Members">
+    @for (member of loadedMembers; track member.id) {
+      <app-member-list-item [member]="member" />
+    } @empty {
+      <mat-list-item>No members added yet.</mat-list-item>
+    }
+  </mat-list>
+} @else {
+  <p role="status">Loading members...</p>
+}
