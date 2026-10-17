@@ -1,20 +1,20 @@
 import { Component, inject, OnInit, signal, OnDestroy, computed } from '@angular/core';
 import { Member } from '../../model/member';
 import { MemberService } from '../../service/member.service';
-import { MatListModule } from '@angular/material/list';
+import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
-import { MemberListItem } from '../../component/member-list-item/member-list-item';
 import { MatDialog } from '@angular/material/dialog';
 import { AddMemberDialog } from '../../component/add-member-dialog/add-member-dialog';
 import { Subscription } from 'rxjs';
 
 @Component({
-  imports: [MatListModule, MatButtonModule, MemberListItem],
+  imports: [MatTableModule, MatButtonModule],
   selector: 'app-members-management',
   styleUrl: './members-management.scss',
   templateUrl: './members-management.html',
 })
 export class MembersManagement implements OnInit, OnDestroy {
+  protected readonly displayedColumns = ['name'];
   protected readonly sortedMembers = computed(() => {
     const members = this.members();
     if (!members) {

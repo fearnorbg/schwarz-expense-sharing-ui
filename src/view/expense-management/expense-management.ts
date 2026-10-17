@@ -1,7 +1,6 @@
 import { Component, inject, OnInit, signal, OnDestroy, computed } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { MatListModule } from '@angular/material/list';
-import { ExpenseListItem } from '../../component/expense-list-item/expense-list-item';
+import { MatTableModule } from '@angular/material/table';
 import { createViewModel, Expense, ExpenseViewModel } from '../../model/expense';
 import { MemberService } from '../../service/member.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,12 +11,13 @@ import { MatButton } from '@angular/material/button';
 import { AddExpenseDialog } from '../../component/add-expense-dialog/add-expense-dialog';
 
 @Component({
-  imports: [MatListModule, ExpenseListItem, MatButton, DecimalPipe],
+  imports: [MatTableModule, MatButton, DecimalPipe],
   selector: 'app-expense-management',
   styleUrl: './expense-management.scss',
   templateUrl: './expense-management.html',
 })
 export class ExpenseManagement implements OnInit, OnDestroy {
+  protected readonly displayedColumns = ['title', 'amount', 'payer', 'participants'];
   protected readonly totalExpensesInCents = computed<number | undefined>(() => {
     const expenses = this.expensesViewData();
     if (!expenses) {
