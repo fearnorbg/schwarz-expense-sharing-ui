@@ -48,8 +48,8 @@ describe('DebtSettlementService', () => {
     expect(transactions).toEqual([
       { senderId: 1, recipientId: 4, amountInCents: 6 },
       { senderId: 2, recipientId: 5, amountInCents: 4 },
-      { senderId: 3, recipientId: 4, amountInCents: 2 },
       { senderId: 3, recipientId: 5, amountInCents: 2 },
+      { senderId: 3, recipientId: 4, amountInCents: 2 },
     ]);
     const balances = new Map([
       [1, -6],
