@@ -1,0 +1,9 @@
+mat-dialog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.error {
+  color: var(--mat-form-field-error-text-color, var(--mat-sys-error));
+}

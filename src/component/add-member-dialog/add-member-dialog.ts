@@ -36,7 +36,7 @@ export class AddMemberDialog {
       error: (error: unknown) => {
         this.saving.set(false);
         this.dialogRef.disableClose = false;
-        this.error.set(String(error));
+        this.error.set(error instanceof Error ? error.message : String(error));
       },
     });
   }

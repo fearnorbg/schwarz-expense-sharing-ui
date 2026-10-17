@@ -1,1 +1,24 @@
-<p>expense-management works!</p>
+<header class="list-header">
+  <h2>Expenses</h2>
+  <button mat-flat-button type="button" (click)="addExpense()" [disabled]="!expensesViewData()">+</button>
+  <p class="list-total" aria-live="polite">
+    Total:
+    @let total = totalExpensesInCents();
+    @if (total !== undefined) {
+      €{{ total / 100 | number: '1.2-2' }}
+    } @else {
+      Calculating...
+    }
+  </p>
+</header>
+<mat-list aria-label="Expenses">
+  @if (expensesViewData(); as loadedExpenses) {
+    @for (expense of loadedExpenses; track expense.id) {
+      <app-expense-list-item [expense]="expense" />
+    } @empty {
+      <mat-list-item>No expenses added yet.</mat-list-item>
+    }
+  } @else {
+    <mat-list-item><span role="status">Loading expenses...</span></mat-list-item>
+  }
+</mat-list>

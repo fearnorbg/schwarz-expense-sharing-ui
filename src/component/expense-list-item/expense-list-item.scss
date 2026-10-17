@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  max-width: 100%;
+}
+
+:host mat-list-item {
+  --mat-list-list-item-label-text-color: var(--mat-sys-on-secondary-container);
+  --mat-list-list-item-label-text-weight: 500;
+  --mat-list-list-item-supporting-text-color: var(--mat-sys-on-secondary-container);
+  --mat-list-list-item-trailing-supporting-text-color: var(--mat-sys-on-secondary-container);
+
+  width: auto;
+  height: auto;
+  min-height: 88px;
+  padding-block: 12px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 24px;
+  background-color: var(--mat-sys-secondary-container);
+}
+
+.expense-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+
+  p {
+    margin: 0;
+  }
+
+  strong {
+    font-weight: 700;
+  }
+}

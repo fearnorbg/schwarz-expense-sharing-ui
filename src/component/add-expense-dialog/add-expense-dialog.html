@@ -1,0 +1,49 @@
+<h2 mat-dialog-title>Add expense</h2>
+<form [formGroup]="form" (ngSubmit)="save()">
+  <mat-dialog-content>
+    @if (members.length === 0) {
+      <p role="status">Add a member before adding an expense.</p>
+    }
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+      <mat-error>Expense title is required.</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Amount</mat-label>
+      <input matInput formControlName="amount" inputmode="decimal" />
+      @if (form.controls.amount.hasError('max')) {
+        <mat-error>Expense amount cannot exceed {{ maxExpenseAmount }}.</mat-error>
+      } @else {
+        <mat-error>Enter a non-negative amount with up to two decimal places.</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Paid by</mat-label>
+      <mat-select formControlName="payerId">
+        @for (member of members; track member.id) {
+          <mat-option [value]="member.id">{{ member.name }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>Select a payer.</mat-error>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Participants</mat-label>
+      <mat-select formControlName="participantIds" multiple>
+        @for (member of members; track member.id) {
+          <mat-option [value]="member.id">{{ member.name }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>Select at least one participant.</mat-error>
+    </mat-form-field>
+    @if (error()) {
+      <p class="error" role="alert">{{ error() }}</p>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close [disabled]="saving()">Cancel</button>
+    <button mat-flat-button type="submit" [disabled]="form.invalid || saving() || members.length === 0">
+      {{ saving() ? 'Adding...' : 'Add expense' }}
+    </button>
+  </mat-dialog-actions>
+</form>

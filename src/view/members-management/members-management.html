@@ -1,12 +1,15 @@
-<button mat-flat-button type="button" (click)="addMember()" [disabled]="!sortedMembers()">Add member +</button>
-@if (sortedMembers(); as loadedMembers) {
-  <mat-list aria-label="Members">
+<header class="list-header">
+  <h2>Members</h2>
+  <button mat-flat-button type="button" (click)="addMember()" [disabled]="!sortedMembers()">+</button>
+</header>
+<mat-list aria-label="Members">
+  @if (sortedMembers(); as loadedMembers) {
     @for (member of loadedMembers; track member.id) {
       <app-member-list-item [member]="member" />
     } @empty {
       <mat-list-item>No members added yet.</mat-list-item>
     }
-  </mat-list>
-} @else {
-  <p role="status">Loading members...</p>
-}
+  } @else {
+    <mat-list-item><span role="status">Loading members...</span></mat-list-item>
+  }
+</mat-list>
